@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
   }
 )
 
-export const requestParams = (url, method = 'post', params) => {
+export const requestParams = (url, params = null, method = 'post') => {
   return axiosInstance({
     url,
     method,
@@ -51,7 +51,7 @@ export const requestParams = (url, method = 'post', params) => {
   })
 }
 
-export const requestData = (url, method = 'post', data) => {
+export const requestData = (url, data = null, method = 'post') => {
   return axiosInstance({
     url,
     method,
