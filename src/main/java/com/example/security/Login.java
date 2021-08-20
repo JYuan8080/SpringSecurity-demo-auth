@@ -29,9 +29,6 @@ public class Login implements AuthenticationProvider {
     @SneakyThrows
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        /*
-            该方法中抛出AuthenticationException及其子类型的异常会被异常过滤器捕获到，并进行处理
-         */
         //获取用户名
         String account = authentication.getName();
         //获取密码

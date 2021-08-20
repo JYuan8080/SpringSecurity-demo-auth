@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(Integer id) {
         List<Menu> list = userMapper.getAuthorities(id);
-        return list.stream().map(item -> new SimpleGrantedAuthority(item.getCode())).collect(Collectors.toList());
+        return list.stream().map(item -> new SimpleGrantedAuthority(item.getCode())).collect(Collectors.toSet());
     }
 
     @Override
