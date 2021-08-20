@@ -12,12 +12,16 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -43,17 +47,27 @@ public class UserController {
 
     @PostMapping("/logout")
     @ApiOperation(value = "用户退出")
-    public Result<String> logout() {
+    public Result<String> logout(@ApiIgnore HttpServletRequest request, @ApiIgnore HttpServletResponse response) {
+        final Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length != 0) {
+            for (Cookie cookie : cookies) {
+                if ("AUTH_TOKEN".equals(cookie.getName())) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    break;
+                }
+            }
+
+        }
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) SecurityContextHolder.getContext().getAuthentication();
         redisUtil.del(hasTokenAuthentication.getKey());
-        return new Result<>(200, null, "退出成功");
+        return Result.logout();
     }
 
-    @PreAuthorize("hasAuthority('setting.user')")
     @PostMapping("/menus")
     @ApiOperation(value = "用户菜单")
-    public Result<List<Menu>> menus() throws TimeoutException {
-        HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) SecurityContextHolder.getContext().getAuthentication();
+    public Result<List<Menu>> menus(@ApiIgnore Authentication authentication) throws TimeoutException {
+        HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) authentication;
         final String token = hasTokenAuthentication.getToken();
         if (token != null) {
             String username = JWTUtil.verify(token);

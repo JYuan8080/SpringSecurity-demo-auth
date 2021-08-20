@@ -19,8 +19,8 @@ public class Result<T> implements Serializable {
     private String message;
     private T data;
 
-    public static Result<String> loginSuccess(String token) {
-        return new Result<String>(200, null, token);
+    public static Result<String> loginSuccess() {
+        return new Result<String>(200, null, "登录成功");
     }
 
     public static Result<String> loginFail(String message) {
@@ -36,6 +36,6 @@ public class Result<T> implements Serializable {
     }
 
     public static Result<String> logout() {
-        return new Result<>(200, "退出成功", null);
+        return new Result<>(200, null, "退出成功");
     }
 }
