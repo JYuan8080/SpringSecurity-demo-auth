@@ -5,6 +5,7 @@ import com.example.bean.Result;
 import com.example.bean.UserInfo;
 import com.example.security.HasTokenAuthentication;
 import com.example.service.UserService;
+import com.example.util.CookieUtil;
 import com.example.util.JWTUtil;
 import com.example.util.RedisUtil;
 import io.swagger.annotations.Api;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -38,6 +38,9 @@ public class UserController {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private CookieUtil cookieUtil;
+
     @PostMapping("/login")
     @ApiOperation(value = "用户登录")
     @ApiImplicitParams({@ApiImplicitParam(name = "username", required = true, dataType = "String",defaultValue = "张三"), @ApiImplicitParam(name = "password", required = true, dataType = "String",defaultValue = "123456")})
@@ -48,17 +51,7 @@ public class UserController {
     @PostMapping("/logout")
     @ApiOperation(value = "用户退出")
     public Result<String> logout(@ApiIgnore HttpServletRequest request, @ApiIgnore HttpServletResponse response) {
-        final Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length != 0) {
-            for (Cookie cookie : cookies) {
-                if ("AUTH_TOKEN".equals(cookie.getName())) {
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                    break;
-                }
-            }
-
-        }
+        cookieUtil.remove(request,response);
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) SecurityContextHolder.getContext().getAuthentication();
         redisUtil.del(hasTokenAuthentication.getKey());
         return Result.logout();
