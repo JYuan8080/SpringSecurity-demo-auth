@@ -57,7 +57,7 @@ public class UserController {
         return Result.logout();
     }
 
-    @PostMapping("/menus")
+    @PostMapping("/user/menus")
     @ApiOperation(value = "用户菜单")
     public Result<List<Menu>> menus(@ApiIgnore Authentication authentication) throws TimeoutException {
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) authentication;

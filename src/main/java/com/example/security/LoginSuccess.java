@@ -27,7 +27,7 @@ public class LoginSuccess implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) authentication;
         cookieUtil.set(hasTokenAuthentication.getToken(),response);
-        redisUtil.setex(hasTokenAuthentication.getKey(), 6 * 7 * 24, hasTokenAuthentication.getToken());
+        redisUtil.set(hasTokenAuthentication.getKey(), hasTokenAuthentication.getToken());
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(JSON.toJSONString(Result.loginSuccess()));
     }

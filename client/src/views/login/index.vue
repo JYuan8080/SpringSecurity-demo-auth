@@ -44,7 +44,6 @@ export default {
       form,
       async onLogin() {
         const res = await login(form.username, form.password)
-        console.log(res)
       }
     }
   }

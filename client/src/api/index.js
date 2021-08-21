@@ -31,14 +31,13 @@ axiosInstance.interceptors.response.use(
   (result) => {
     // 对请求成功的响应进行拦截 result就是响应结果
     // 拦截后进行相应的逻辑处理
-
-    return result // 放行
+    return result.data // 放行
   },
   (error) => {
     // 对请求失败的响应进行拦截
 
     // 拦截后进行相应的逻辑处理
-
+    console.log(error.code, 'error')
     return error // 放行
   }
 )

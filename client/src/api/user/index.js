@@ -8,12 +8,16 @@
 import { requestParams } from '../index'
 
 export function login(username, password) {
-  requestParams('/login', {
+  return requestParams('/login', {
     username,
     password
   })
 }
 
 export function logout() {
-  requestParams('/login')
+  return requestParams('/login')
+}
+
+export function findPagesAndButton() {
+  return requestParams('/user/menus')
 }

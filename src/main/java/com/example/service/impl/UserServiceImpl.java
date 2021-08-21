@@ -68,7 +68,11 @@ public class UserServiceImpl implements UserService {
         list.clear();
         menus.forEach(item -> {
             if (item.getPid().equals(0)) {
-                list.add(item);
+                if (item.getType() == 1 && item.getChildren().size() != 0) {
+                    list.add(item);
+                }else if(item.getType() == 0) {
+                    list.add(item);
+                }
             }
         });
         return list;

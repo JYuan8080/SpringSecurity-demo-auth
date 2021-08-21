@@ -14,6 +14,7 @@ module.exports = {
   },
   plugins: ['vue'],
   rules: {
+    'no-param-reassign': 0,
     'import/no-extraneous-dependencies': 0,
     'vue/no-multiple-template-root': 0, // 忽略vue模板标签下有多个根标签
     'vue/html-self-closing': 2 // html标签自闭合
