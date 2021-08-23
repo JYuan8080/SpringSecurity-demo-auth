@@ -28,39 +28,43 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        /*
+        final String loginURI = "/login";
+        if (!loginURI.equals(httpServletRequest.getRequestURI())) {
+            /*
             由于Filter和Servlet无法使用自动注入属性，因此想要获取IOC容器中的组件，需要用以下方式进行
          */
-        ServletContext context = httpServletRequest.getServletContext();
-        ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(context);
-        UserDetailsService userDetailsService = ctx.getBean(UserDetailsService.class);
-        RedisUtil redisUtil = ctx.getBean(RedisUtil.class);
-        final CookieUtil cookieUtil = ctx.getBean(CookieUtil.class);
+            ServletContext context = httpServletRequest.getServletContext();
+            ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(context);
+            UserDetailsService userDetailsService = ctx.getBean(UserDetailsService.class);
+            RedisUtil redisUtil = ctx.getBean(RedisUtil.class);
+            final CookieUtil cookieUtil = ctx.getBean(CookieUtil.class);
 
-        cookieUtil.get(httpServletRequest,token -> {
-            String username;
-            try {
-                username = JWTUtil.verify(token);
-            } catch (Exception e) {
-                httpServletRequest.setAttribute("errorMessage","身份无效");
-                throw new BadCredentialsException("");
-            }
+            cookieUtil.get(httpServletRequest,token -> {
+                String username;
+                try {
+                    username = JWTUtil.verify(token);
+                } catch (Exception e) {
+                    httpServletRequest.setAttribute("errorMessage","身份无效");
+                    throw new BadCredentialsException("");
+                }
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UserInfo userInfo = (UserInfo) userDetails;
-            final Integer id = userInfo.getId();
-            final Object value = redisUtil.get("user:id:" + id + ":id");
-            if (value != null) {
-                userInfo.setUserService((UserService) userDetailsService);
-                HasTokenAuthentication hasTokenAuthentication = new HasTokenAuthentication(userInfo.getUsername(), userInfo.getPassword(), userInfo.getAuthorities());
-                hasTokenAuthentication.setToken(token);
-                hasTokenAuthentication.setKey("user:id:" + id + ":id");
-                SecurityContextHolder.getContext().setAuthentication(hasTokenAuthentication);
-            }else {
-                httpServletRequest.setAttribute("errorMessage","身份已过期");
-                throw new BadCredentialsException("");
-            }
-        });
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserInfo userInfo = (UserInfo) userDetails;
+                final Integer id = userInfo.getId();
+                final Object value = redisUtil.get("user:id:" + id + ":id");
+                if (value != null) {
+                    userInfo.setUserService((UserService) userDetailsService);
+                    HasTokenAuthentication hasTokenAuthentication = new HasTokenAuthentication(userInfo.getUsername(), userInfo.getPassword(), userInfo.getAuthorities());
+                    hasTokenAuthentication.setToken(token);
+                    hasTokenAuthentication.setKey("user:id:" + id + ":id");
+                    SecurityContextHolder.getContext().setAuthentication(hasTokenAuthentication);
+                }else {
+                    httpServletRequest.setAttribute("errorMessage","身份已过期");
+                    throw new BadCredentialsException("");
+                }
+            });
+
+        }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }

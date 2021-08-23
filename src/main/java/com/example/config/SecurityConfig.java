@@ -2,6 +2,7 @@ package com.example.config;
 
 import com.example.filter.JWTFilter;
 import com.example.security.*;
+import com.example.security.LoginSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
