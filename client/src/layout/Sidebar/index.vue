@@ -8,7 +8,7 @@
 <template>
   <el-menu
     :uniqueOpened="true"
-    default-active="1-1"
+    :default-active="currentIndex"
     class="sidebar"
     background-color="#545c64"
     text-color="#fff"
@@ -21,6 +21,7 @@
 
 <script>
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 import SidebarItem from './SidebarItem.vue'
 
 export default {
@@ -31,11 +32,18 @@ export default {
   setup() {
     const store = useStore()
     const { pages } = store.state.user
+    const route = useRoute()
+    const currentIndex = route.path
     return {
-      pages
+      pages,
+      currentIndex
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.sidebar {
+  width: 200px;
+}
+</style>

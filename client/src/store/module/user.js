@@ -9,6 +9,7 @@ import { findPagesAndButton } from '@/api/user'
 import AsyncRouter from '@/router/AsyncRouter'
 import ResValidator from '../../utils/ResValidator'
 import router from '@/router/index'
+import { findUserInfo } from '../../api/user'
 
 /**
  * 比对两张路由表
@@ -87,6 +88,7 @@ function addRedirect(accessRoutes) {
       if (item.children && item.children.length) {
         item.redirect = item.children[0].path
       }
+      addRedirect(item.children)
     })
   }
 }
@@ -101,6 +103,9 @@ export default {
   },
   getters: {},
   mutations: {
+    setUserInfo(state, payload) {
+      state.userInfo = payload
+    },
     setPages(state, payload) {
       state.pages = payload
     },
@@ -109,6 +114,20 @@ export default {
     }
   },
   actions: {
+    getUserInfo() {
+      return new Promise((resolve, reject) => {
+        findUserInfo()
+          .then((value) => {
+            ResValidator(value, (data) => {
+              this.commit('setUserInfo', data)
+              resolve(true)
+            })
+          })
+          .catch(() => {
+            reject()
+          })
+      })
+    },
     getPagesAndButtons() {
       return new Promise((resolve, reject) => {
         findPagesAndButton()

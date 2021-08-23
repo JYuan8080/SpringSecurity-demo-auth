@@ -6,53 +6,65 @@
  * @update: 2021/8/21 18:24
 -->
 <template>
-  <el-submenu :index="item.path">
+  <el-submenu v-if="showSubmenuPage(item)" :index="getIndex(item)">
     <template #title>
-      <i class="el-icon-location" />
-      <span>导航一</span>
-      <span>{{ pages }}</span>
+      <i :class="getIcon(item)" />
+      <span>{{ getTitle(item) }}</span>
     </template>
-    <el-menu-item-group>
-      <template #title>分组一</template>
-      <el-menu-item index="1-1">选项1</el-menu-item>
-      <el-menu-item index="1-2">选项2</el-menu-item>
-    </el-menu-item-group>
-    <el-menu-item-group title="分组2">
-      <el-menu-item index="1-3">选项3</el-menu-item>
-    </el-menu-item-group>
-    <el-submenu index="1-4">
-      <template #title>选项4</template>
-      <el-menu-item index="1-4-1">选项1</el-menu-item>
-    </el-submenu>
+    <SidebarItem v-for="item in item.children" :key="item.path" :item="item" />
   </el-submenu>
-  <el-menu-item index="2">
-    <i class="el-icon-menu" />
-    <template #title>导航二</template>
+  <el-menu-item v-if="showItemPage(item)" :index="getIndex(item)">
+    <i :class="getIcon(item)" />
+    <template #title>{{ getTitle(item) }}</template>
   </el-menu-item>
-  <el-menu-item index="4">
-    <i class="el-icon-setting" />
-    <template #title>导航四</template>
-  </el-menu-item>
-  <el-submenu index="5">
-    <template #title>
-      <i class="el-icon-location" />
-      <span>导航一</span>
-    </template>
-    <el-menu-item-group>
-      <template #title>分组一</template>
-      <el-menu-item index="5-1">选项1</el-menu-item>
-      <el-menu-item index="5-2">选项2</el-menu-item>
-    </el-menu-item-group>
-    <el-menu-item-group title="分组2">
-      <el-menu-item index="5-3">选项3</el-menu-item>
-    </el-menu-item-group>
-  </el-submenu>
 </template>
 
 <script>
 export default {
   name: 'SidebarItem',
-  props: ['item']
+  props: ['item'],
+  setup() {
+    return {
+      showSubmenuPage(item) {
+        if (item.children && item.children.length) {
+          if (item.children.length === 1) {
+            return !!item.alwaysShow
+          }
+          return true
+        }
+        return false
+      },
+      showItemPage(item) {
+        if (!item.children) {
+          return true
+        }
+        return item.children && item.children.length === 1 && !item.alwaysShow
+      },
+      getIcon(item) {
+        if (item.children && item.children.length === 1 && !item.alwaysShow) {
+          if (item.children[0].meta && item.children[0].meta.icon) {
+            return item.children[0].meta.icon
+          }
+        }
+        if (item.meta && item.meta.icon) {
+          return item.meta.icon
+        }
+        return false
+      },
+      getTitle(item) {
+        if (item.children && item.children.length === 1 && !item.alwaysShow) {
+          return item.children[0].name
+        }
+        return item.name
+      },
+      getIndex(item) {
+        if (item.children && item.children.length === 1 && !item.alwaysShow) {
+          return item.children[0].path
+        }
+        return item.path
+      }
+    }
+  }
 }
 </script>
 

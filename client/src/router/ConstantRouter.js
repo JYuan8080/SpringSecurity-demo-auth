@@ -17,18 +17,5 @@ export default [
     path: '/404',
     name: '错误页面',
     component: () => import('@/views/404/index.vue')
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/index',
-    children: [
-      {
-        path: '/index',
-        component: () => import('@/views/index.vue'),
-        name: '首页',
-        meta: { title: '首页', icon: '' }
-      }
-    ]
   }
 ]

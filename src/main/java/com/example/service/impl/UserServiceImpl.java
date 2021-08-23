@@ -10,7 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -28,14 +31,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(Integer id) {
-        List<Menu> list = userMapper.getAuthorities(id);
+    public Collection<? extends GrantedAuthority> getAuthorities(String name) {
+        List<Menu> list = userMapper.getAuthorities(name);
         return list.stream().map(item -> new SimpleGrantedAuthority(item.getCode())).collect(Collectors.toSet());
     }
 
     @Override
-    public List<Menu> findMenus(Integer id) {
-        List<Menu> menus = userMapper.getAuthorities(id);
+    public List<Menu> findMenus(String name) {
+        List<Menu> menus = userMapper.getAuthorities(name);
 
         final ArrayList<Menu> list = new ArrayList<>();
         final ArrayList<Menu> subList = new ArrayList<>();
@@ -68,7 +71,7 @@ public class UserServiceImpl implements UserService {
         list.clear();
         menus.forEach(item -> {
             if (item.getPid().equals(0)) {
-                if (item.getType() == 1 && item.getChildren().size() != 0) {
+                if (item.getType() == 1 && item.getChildren() != null && item.getChildren().size() != 0) {
                     list.add(item);
                 }else if(item.getType() == 0) {
                     list.add(item);

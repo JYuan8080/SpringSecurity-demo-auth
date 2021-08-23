@@ -9,16 +9,16 @@ import java.util.List;
  * @author JYuan
  * @create 2021-08-19 11:05
  */
-public interface UserMapper extends BaseMapper<UserInfo> {
+public interface UserMapper {
     /** 根据名称查找
      * @param name
      * @return
      */
     UserInfo findByName(String name);
 
-    /** 根据id获取权限
-     * @param id
+    /** 根据username获取权限
+     * @param name
      * @return
      */
-    List<Menu> getAuthorities(Integer id);
+    List<Menu> getAuthorities(String name);
 }

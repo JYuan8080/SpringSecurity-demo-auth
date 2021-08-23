@@ -13,14 +13,14 @@ import java.util.List;
  */
 public interface UserService extends UserDetailsService {
     /** 获取用户具有的权限
-     * @param id 用户id
+     * @param name 用户id
      * @return 权限集合
      */
-    Collection<? extends GrantedAuthority> getAuthorities(Integer id);
+    Collection<? extends GrantedAuthority> getAuthorities(String name);
 
     /** 获取用户可以访问的菜单
-     * @param id
+     * @param name
      * @return
      */
-    List<Menu> findMenus(Integer id);
+    List<Menu> findMenus(String name);
 }

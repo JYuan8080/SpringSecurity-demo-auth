@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 /**
  * @author JYuan
@@ -43,7 +43,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ApiOperation(value = "用户登录")
-    @ApiImplicitParams({@ApiImplicitParam(name = "username", required = true, dataType = "String",defaultValue = "张三"), @ApiImplicitParam(name = "password", required = true, dataType = "String",defaultValue = "123456")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "username", required = true, dataType = "String", defaultValue = "张三"), @ApiImplicitParam(name = "password", required = true, dataType = "String", defaultValue = "123456")})
     public Result<String> login(String username, String password) {
         return null;
     }
@@ -51,7 +51,7 @@ public class UserController {
     @PostMapping("/logout")
     @ApiOperation(value = "用户退出")
     public Result<String> logout(@ApiIgnore HttpServletRequest request, @ApiIgnore HttpServletResponse response) {
-        cookieUtil.remove(request,response);
+        cookieUtil.remove(request, response);
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) SecurityContextHolder.getContext().getAuthentication();
         redisUtil.del(hasTokenAuthentication.getKey());
         return Result.logout();
@@ -60,13 +60,26 @@ public class UserController {
     @PostMapping("/user/menus")
     @ApiOperation(value = "用户菜单")
     public Result<List<Menu>> menus(@ApiIgnore Authentication authentication) throws TimeoutException {
+        return verifyToken(authentication, (username) -> new Result<>(200, null, userService.findMenus(username)));
+    }
+
+    @PostMapping("/user/info")
+    @ApiOperation(value = "用户信息")
+    public Result<UserInfo> userInfo(@ApiIgnore Authentication authentication) throws TimeoutException {
+
+        return verifyToken(authentication, (username) -> {
+            final UserInfo userInfo = (UserInfo) userService.loadUserByUsername(username);
+            userInfo.setUserService(userService);
+            return new Result<>(200, null, userInfo);
+        });
+    }
+
+    private <T> Result<T> verifyToken(Authentication authentication, Function<String, Result<T>> function) throws TimeoutException {
         HasTokenAuthentication hasTokenAuthentication = (HasTokenAuthentication) authentication;
         final String token = hasTokenAuthentication.getToken();
         if (token != null) {
             String username = JWTUtil.verify(token);
-            final UserDetails userDetails = userService.loadUserByUsername(username);
-            UserInfo userInfo = (UserInfo) userDetails;
-            return new Result<>(200, null, userService.findMenus(userInfo.getId()));
+            return function.apply(username);
         }
         throw new TimeoutException("身份过期或无效");
     }

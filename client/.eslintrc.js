@@ -14,6 +14,9 @@ module.exports = {
   },
   plugins: ['vue'],
   rules: {
+    'import/extensions': 0,
+    'import/no-unresolved': 0,
+    'no-plusplus': 0,
     'no-param-reassign': 0,
     'import/no-extraneous-dependencies': 0,
     'vue/no-multiple-template-root': 0, // 忽略vue模板标签下有多个根标签

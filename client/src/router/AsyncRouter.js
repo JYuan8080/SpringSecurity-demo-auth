@@ -9,12 +9,26 @@ import Layout from '@/layout/index.vue'
 // 如果必须显示顶层目录，则指定一个alwaysShow属性，如果不指定，当子菜单只有一个时，将会忽略上层菜单
 export default [
   {
+    path: '/',
+    name: '首页',
+    component: Layout,
+    redirect: '/index',
+    children: [
+      {
+        path: '/index',
+        component: () => import('@/views/index.vue'),
+        name: '首页',
+        meta: { icon: 'el-icon-location' }
+      }
+    ]
+  },
+  {
     path: '/customer',
     name: '客户',
     alwaysShow: true, // 是否总是显示
     component: Layout,
     meta: {
-      icon: ''
+      icon: 'el-icon-s-custom'
     },
     children: [
       {
@@ -41,7 +55,7 @@ export default [
     alwaysShow: true,
     component: Layout,
     meta: {
-      icon: ''
+      icon: 'el-icon-s-order'
     },
     children: [
       {
@@ -68,12 +82,13 @@ export default [
     alwaysShow: true,
     component: Layout,
     meta: {
-      icon: ''
+      icon: 'el-icon-s-tools'
     },
     children: [
       {
         path: '/setting/user',
         name: '用户设置',
+        component: () => import('@/views/setting/user/index.vue'),
         meta: {
           icon: ''
         },

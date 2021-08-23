@@ -12,6 +12,6 @@
     </select>
 
     <select id="getAuthorities" resultType="com.example.bean.Menu">
-        select * from menu where id in (select menu_id from menu_role WHERE role_id = (select role_id from user_role WHERE user_id = #{id}))
+        select * from menu where id in (select menu_id from menu_role WHERE role_id = (select role_id from user_role WHERE user_id = (select id from user where name = #{name})));
     </select>
 </mapper>

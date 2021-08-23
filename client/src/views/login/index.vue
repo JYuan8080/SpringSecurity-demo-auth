@@ -30,7 +30,9 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
+import { useRouter } from 'vue-router'
 import { login } from '../../api/user'
+import ResValidator from '@/utils/ResValidator'
 
 export default {
   name: 'index',
@@ -39,11 +41,15 @@ export default {
       username: null,
       password: null
     })
+    const router = useRouter()
 
     return {
       form,
       async onLogin() {
         const res = await login(form.username, form.password)
+        ResValidator(res, () => {
+          router.replace('/')
+        })
       }
     }
   }
@@ -56,6 +62,7 @@ export default {
   height: 100vh;
   background-image: url('@/assets/images/login/BG.png');
   background-size: 100% 100%;
+
   .login-form {
     position: fixed;
     left: 50%;
@@ -73,23 +80,29 @@ export default {
     right: 45px;
     width: 448px;
     height: 461px;
+
     .el-input {
       font-size: 18px;
+
       &:nth-of-type(2) {
         margin-bottom: 40px;
       }
+
       &:nth-of-type(3) {
         margin-bottom: 52px;
       }
+
       :deep(.el-input__clear) {
         line-height: 56px;
         font-size: 18px;
       }
     }
+
     :deep(.el-input__icon) {
       line-height: 56px;
       font-size: 18px;
     }
+
     :deep(.el-input__inner) {
       height: 56px;
       border-radius: 10px;

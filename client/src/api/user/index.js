@@ -21,3 +21,7 @@ export function logout() {
 export function findPagesAndButton() {
   return requestParams('/user/menus')
 }
+
+export function findUserInfo() {
+  return requestParams('/user/info')
+}
